@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>HILL CLIMB — G63 KART</title>
+
+<style>
+*{
+ box-sizing:border-box;
+ -webkit-tap-highlight-color:transparent
+}
+
+html,body{
+ margin:0;
+ width:100%;
+ height:100%;
+ overflow:hidden;
+ font-family:Arial,sans-serif;
+ background:#07131d;
+ color:white;
+ user-select:none
+}
+
+button{
+ font:inherit;
+ color:white;
+ border:0;
+ cursor:pointer
+}
+
+.screen{
+ position:absolute;
+ inset:0;
+ display:none;
+ overflow:auto;
+ padding:15px
+}
+
+.screen.active{
+ display:block
+}
+
+#menu{
+ background:
+ linear-gradient(#55bdf4aa,#9bd85e99),
+ linear-gradient(#122d3b,#0b1922)
+}
+
+.top{
+ height:58px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:8px;
+ padding:7px 12px;
+ background:#07131ddd;
+ border:2px solid #31566a;
+ border-radius:16px;
+ box-shadow:0 8px 25px #0008
+}
+
+.logo{
+ font-size:24px;
+ font-weight:1000
+}
+
+.wallet{
+ display:flex;
+ gap:7px;
+ flex-wrap:wrap;
+ justify-content:flex-end
+}
+
+.wallet span{
+ background:#142b38;
+ border:1px solid #426276;
+ padding:8px 10px;
+ border-radius:10px;
+ font-weight:900
+}
+
+.menuContent{
+ min-height:calc(100% - 70px);
+ display:flex;
+ align-items:flex-end;
+ justify-content:center;
+ padding:15px 0 25px
+}
+
+.menuCard{
+ width:min(950px,100%);
+ background:#07131ddd;
+ border:2px solid #345b70;
+ border-radius:24px;
+ padding:18px;
+ box-shadow:0 15px 50px #0009
+}
+
+.hero{
+ height:330px;
+ border-radius:20px;
+ background:
+ linear-gradient(90deg,#0009,#0000),
+ url("G63Kart.PNG") center/contain no-repeat,
+ #173744;
+ display:flex;
+ flex-direction:column;
+ justify-content:flex-end;
+ padding:20px;
+ overflow:hidden
+}
+
+.hero h1{
+ margin:0;
+ font-size:clamp(38px,8vw,78px);
+ line-height:.9;
+ text-shadow:4px 5px #000
+}
+
+.hero p{
+ margin:8px 0 0;
+ font-weight:900;
+ font-size:18px
+}
+
+.menuButtons{
+ display:grid;
+ grid-template-columns:1fr 2fr 1fr;
+ gap:10px;
+ margin-top:12px
+}
+
+.btn{
+ padding:17px 12px;
+ border-radius:15px;
+ background:#173746;
+ border:2px solid #3b6072;
+ font-weight:1000
+}
+
+.btn.primary{
+ background:#20c83c;
+ color:#07120a;
+ border-color:#82ff8d;
+ font-size:21px
+}
+
+.btn:active{
+ transform:scale(.97)
+}
+
+/* WORLDS */
+
+#worlds{
+ background:linear-gradient(#4fbaf1,#8acb62)
+}
+
+.pageTop{
+ display:flex;
+ align-items:center;
+ gap:12px
+}
+
+.back{
+ background:#102b39;
+ border:2px solid #416275;
+ border-radius:12px;
+ padding:10px 15px;
+ font-weight:1000
+}
+
+.pageTitle{
+ font-size:30px;
+ font-weight:1000
+}
+
+.worldGrid{
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ gap:11px;
+ margin-top:15px
+}
+
+.world{
+ min-height:145px;
+ position:relative;
+ overflow:hidden;
+ border-radius:17px;
+ padding:12px;
+ border:2px solid #426274;
+ background:#173542;
+ display:flex;
+ flex-direction:column;
+ justify-content:flex-end;
+ cursor:pointer
+}
+
+.world:before{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(transparent,#000d)
+}
+
+.world>*{
+ position:relative
+}
+
+.world b{
+ font-size:18px
+}
+
+.world small{
+ margin-top:5px;
+ font-weight:800;
+ opacity:.8
+}
+
+.world .lock{
+ position:absolute;
+ right:10px;
+ top:8px;
+ font-size:24px
+}
+
+.world.selected{
+ border-color:#62ff72;
+ box-shadow:0 0 0 2px #24bd39 inset
+}
+
+/* TRACKS */
+
+#tracks{
+ background:linear-gradient(#53bdf3,#90cc67)
+}
+
+.trackGrid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px;
+ margin-top:15px
+}
+
+.track{
+ min-height:76px;
+ padding:12px;
+ border-radius:14px;
+ background:#081923ed;
+ border:2px solid #34596c;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ cursor:pointer
+}
+
+.track.locked{
+ opacity:.45
+}
+
+.trackTitle{
+ font-weight:1000
+}
+
+.stars{
+ color:#ffd32f;
+ font-size:18px;
+ margin-top:5px
+}
+
+.reward{
+ color:#ffc928;
+ font-weight:1000
+}
+
+/* GARAGE */
+
+#garage{
+ background:linear-gradient(#172e3b,#07131d)
+}
+
+.garageLayout{
+ display:grid;
+ grid-template-columns:1.1fr .9fr;
+ gap:14px;
+ margin-top:15px
+}
+
+.carBox,
+.statsBox{
+ background:#091a25;
+ border:2px solid #355a6b;
+ border-radius:20px;
+ padding:15px
+}
+
+.carBox{
+ min-height:430px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center
+}
+
+.carBox img{
+ width:100%;
+ max-width:620px;
+ max-height:310px;
+ object-fit:contain
+}
+
+.carName{
+ font-size:27px;
+ font-weight:1000;
+ margin-top:10px
+}
+
+.stat{
+ margin:15px 0
+}
+
+.statHead{
+ display:flex;
+ justify-content:space-between;
+ font-weight:900
+}
+
+.bar{
+ height:11px;
+ margin-top:6px;
+ background:#173340;
+ border-radius:10px;
+ overflow:hidden
+}
+
+.bar i{
+ display:block;
+ height:100%;
+ width:50%;
+ background:#29cf46
+}
+
+.upgradeGrid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+ margin-top:12px
+}
+
+.upgrade{
+ background:#173746;
+ border:1px solid #486979;
+ border-radius:12px;
+ padding:12px;
+ font-weight:900
+}
+
+.upgrade small{
+ display:block;
+ color:#ffd12b;
+ margin-top:5px
+}
+
+/* GAME */
+
+#game{
+ padding:0;
+ overflow:hidden
+}
+
+#gameCanvas{
+ position:absolute;
+ inset:0;
+ width:100%;
+ height:100%;
+ background:#71c9f3
+}
+
+.hud{
+ position:absolute;
+ top:10px;
+ left:10px;
+ right:10px;
+ display:flex;
+ justify-content:space-between;
+ align-items:flex-start;
+ pointer-events:none
+}
+
+.hudLeft,
+.hudRight{
+ display:flex;
+ gap:7px;
+ flex-wrap:wrap
+}
+
+.hudBox{
+ background:#07131ddd;
+ border:2px solid #476878;
+ border-radius:12px;
+ padding:8px 10px;
+ font-weight:1000
+}
+
+.pause{
+ pointer-events:auto;
+ width:48px;
+ height:48px;
+ border-radius:12px;
+ background:#07131ddd;
+ border:2px solid #526e7c;
+ font-size:20px
+}
+
+.fuel{
+ width:130px;
+ height:14px;
+ background:#162c37;
+ border-radius:10px;
+ overflow:hidden;
+ margin-top:5px
+}
+
+.fuel i{
+ display:block;
+ width:100%;
+ height:100%;
+ background:#29cf46
+}
+
+.controls{
+ position:absolute;
+ left:12px;
+ right:12px;
+ bottom:15px;
+ display:flex;
+ justify-content:space-between;
+ pointer-events:none
+}
+
+.controlSide{
+ display:flex;
+ gap:12px
+}
+
+.pedal{
+ pointer-events:auto;
+ touch-action:none;
+ width:115px;
+ height:115px;
+ border-radius:50%;
+ border:3px solid #738d99;
+ background:#07131de8;
+ font-size:18px;
+ font-weight:1000
+}
+
+.gas{
+ background:#08772bd9
+}
+
+.brake{
+ background:#7a2222d9
+}
+
+.tilt{
+ width:80px;
+ height:80px;
+ margin-top:18px
+}
+
+#pausePanel{
+ position:absolute;
+ inset:0;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ background:#0009;
+ z-index:10
+}
+
+.pauseCard{
+ width:min(420px,90%);
+ background:#081923;
+ border:2px solid #456878;
+ border-radius:22px;
+ padding:25px;
+ text-align:center
+}
+
+.pauseCard h2{
+ font-size:32px
+}
+
+/* RESULT */
+
+#result{
+ background:linear-gradient(#4bb9ef,#85c65b)
+}
+
+.resultCard{
+ max-width:500px;
+ margin:10vh auto;
+ background:#081923ee;
+ border:2px solid #426575;
+ border-radius:24px;
+ padding:25px;
+ text-align:center
+}
+
+.resultCard h1{
+ font-size:40px
+}
+
+.rewardBig{
+ font-size:30px;
+ color:#ffd02b;
+ font-weight:1000;
+ margin:20px
+}
+
+/* RESPONSIVE */
+
+@media(max-width:800px){
+ .worldGrid{
+  grid-template-columns:repeat(2,1fr)
+ }
+
+ .garageLayout{
+  grid-template-columns:1fr
+ }
+
+ .menuButtons{
+  grid-template-columns:1fr
+ }
+
+ .hero{
+  height:280px
+ }
+
+ .trackGrid{
+  grid-template-columns:1fr
+ }
+}
+
+@media(max-width:500px){
+ .screen{
+  padding:8px
+ }
+
+ .worldGrid{
+  grid-template-columns:repeat(2,1fr);
+  gap:7px
+ }
+
+ .world{
+  min-height:125px
+ }
+
+ .pedal{
+  width:90px;
+  height:90px
+ }
+
+ .tilt{
+  width:65px;
+  height:65px
+ }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<!-- ================= MENU ================= -->
+
+<section id="menu" class="screen active">
+
+ <div class="top">
+  <div class="logo">🏁 HILL CLIMB</div>
+
+  <div class="wallet">
+   <span>🪙 <b id="coins">12500</b></span>
+   <span>💎 <b id="diamonds">250</b></span>
+  </div>
+ </div>
+
+ <div class="menuContent">
+
+  <div class="menuCard">
+
+   <div class="hero">
+    <h1>HILL CLIMB</h1>
+    <p>G63 KART • БОЛЬШЕ, ВЫШЕ, ДАЛЬШЕ</p>
+   </div>
+
+   <div class="menuButtons">
+    <button class="btn" onclick="openGarage()">🚙 ГАРАЖ</button>
+    <button class="btn primary" onclick="openWorlds()">▶ ИГРАТЬ</button>
+    <button class="btn" onclick="openWorlds()">🏆 ТРАССЫ</button>
+   </div>
+
+  </div>
+
+ </div>
+</section>
+
+
+<!-- ================= WORLDS ================= -->
+
+<section id="worlds" class="screen">
+
+ <div class="pageTop">
+  <button class="back" onclick="showScreen('menu')">←</button>
+  <div class="pageTitle">ВЫБЕРИ МИР</div>
+ </div>
+
+ <div id="worldGrid" class="worldGrid"></div>
+
+</section>
+
+
+<!-- ================= TRACKS ================= -->
+
+<section id="tracks" class="screen">
+
+ <div class="pageTop">
+  <button class="back" onclick="openWorlds()">←</button>
+  <div>
+   <div class="pageTitle" id="trackWorldTitle">ПРОВИНЦИЯ</div>
+   <small id="trackProgress"></small>
+  </div>
+ </div>
+
+ <div id="trackGrid" class="trackGrid"></div>
+
+</section>
+
+
+<!-- ================= GARAGE ================= -->
+
+<section id="garage" class="screen">
+
+ <div class="pageTop">
+  <button class="back" onclick="showScreen('menu')">←</button>
+  <div class="pageTitle">ГАРАЖ</div>
+ </div>
+
+ <div class="garageLayout">
+
+  <div class="carBox">
+
+   <img src="G63Kart.PNG" alt="Mercedes G63">
+
+   <div class="carName">Mercedes-AMG G63</div>
+   <div>G63 KART • 4WD • МЕХАНИКА</div>
+
+  </div>
+
+  <div class="statsBox">
+
+   <h2>ХАРАКТЕРИСТИКИ</h2>
+
+   <div class="stat">
+    <div class="statHead">
+     <span>Двигатель</span>
+     <span id="engineLvl">1</span>
+    </div>
+    <div class="bar"><i id="engineBar"></i></div>
+   </div>
+
+   <div class="stat">
+    <div class="statHead">
+     <span>Подвеска</span>
+     <span id="suspensionLvl">1</span>
+    </div>
+    <div class="bar"><i id="suspensionBar"></i></div>
+   </div>
+
+   <div class="stat">
+    <div class="statHead">
+     <span>Шины</span>
+     <span id="tiresLvl">1</span>
+    </div>
+    <div class="bar"><i id="tiresBar"></i></div>
+   </div>
+
+   <div class="stat">
+    <div class="statHead">
+     <span>4WD</span>
+     <span id="awdLvl">1</span>
+    </div>
+    <div class="bar"><i id="awdBar"></i></div>
+   </div>
+
+   <div class="stat">
+    <div class="statHead">
+     <span>Топливный бак</span>
+     <span id="fuelLvl">1</span>
+    </div>
+    <div class="bar"><i id="fuelBar"></i></div>
+   </div>
+
+   <div class="upgradeGrid">
+
+    <button class="upgrade" onclick="upgrade('engine')">
+     🔧 Двигатель
+     <small id="enginePrice">🪙 1000</small>
+    </button>
+
+    <button class="upgrade" onclick="upgrade('suspension')">
+     🛞 Подвеска
+     <small id="suspensionPrice">🪙 1000</small>
+    </button>
+
+    <button class="upgrade" onclick="upgrade('tires')">
+     ⚙️ Шины
+     <small id="tiresPrice">🪙 1000</small>
+    </button>
+
+    <button class="upgrade" onclick="upgrade('awd')">
+     4️⃣ 4WD
+     <small id="awdPrice">🪙 1000</small>
+    </button>
+
+    <button class="upgrade" onclick="upgrade('fuel')">
+     ⛽ Бак
+     <small id="fuelPrice">🪙 1000</small>
+    </button>
+
+   </div>
+
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- ================= GAME ================= -->
+
+<section id="game" class="screen">
+
+ <canvas id="gameCanvas"></canvas>
+
+ <div class="hud">
+
+  <div class="hudLeft">
+
+   <div class="hudBox">
+    🪙 <span id="gameCoins">0</span>
+   </div>
+
+   <div class="hudBox">
+    📏 <span id="distance">0</span> м
+   </div>
+
+   <div class="hudBox">
+    ⛽
+    <div class="fuel">
+     <i id="fuelBarGame"></i>
+    </div>
+   </div>
+
+  </div>
+
+  <div class="hudRight">
+
+   <div class="hudBox">
+    🏁 <span id="trackNumber">1</span>
+   </div>
+
+   <button class="pause" onclick="pauseGame()">Ⅱ</button>
+
+  </div>
+
+ </div>
+
+ <div class="controls">
+
+  <div class="controlSide">
+
+   <button class="pedal brake"
+    id="brakeBtn">ТОРМОЗ</button>
+
+   <button class="pedal tilt"
+    id="leftBtn">↺</button>
+
+  </div>
+
+  <div class="controlSide">
+
+   <button class="pedal tilt"
+    id="rightBtn">↻</button>
+
+   <button class="pedal gas"
+    id="gasBtn">ГАЗ</button>
+
+  </div>
+
+ </div>
+
+ <div id="pausePanel">
+
+  <div class="pauseCard">
+
+   <h2>ПАУЗА</h2>
+
+   <button class="btn primary"
+    onclick="resumeGame()">
+    ▶ ПРОДОЛЖИТЬ
+   </button>
+
+   <br><br>
+
+   <button class="btn"
+    onclick="quitGame()">
+    ✕ ВЫЙТИ
+   </button>
+
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- ================= RESULT ================= -->
+
+<section id="result" class="screen">
+
+ <div class="resultCard">
+
+  <h1 id="resultTitle">ТРАССА ПРОЙДЕНА!</h1>
+
+  <div class="rewardBig">
+   🪙 +<span id="resultCoins">0</span>
+  </div>
+
+  <p>
+   Дистанция:
+   <b><span id="resultDistance">0</span> м</b>
+  </p>
+
+  <p>
+   ⭐ <span id="resultStars">3</span>
+  </p>
+
+  <button class="btn primary"
+   onclick="nextTrack()">
+   ▶ СЛЕДУЮЩАЯ
+  </button>
+
+  <br><br>
+
+  <button class="btn"
+   onclick="openWorlds()">
+   🌍 МИРЫ
+  </button>
+
+ </div>
+
+</section>
+
+</div>
+
+
+<script>
+/* =========================================================
+   SAVE SYSTEM
+========================================================= */
+
+const SAVE_KEY="hill_climb_g63_save_v1";
+
+let save={
+ coins:12500,
+ diamonds:250,
+ selectedWorld:0,
+ progress:Array(10).fill(1),
+ upgrades:{
+  engine:1,
+  suspension:1,
+  tires:1,
+  awd:1,
+  fuel:1
+ }
+};
+
+try{
+ const old=JSON.parse(localStorage.getItem(SAVE_KEY));
+ if(old){
+  save=Object.assign(save,old);
+  save.upgrades=Object.assign({
+   engine:1,
+   suspension:1,
+   tires:1,
+   awd:1,
+   fuel:1
+  },old.upgrades||{});
+ }
+}catch(e){}
+
+function saveGame(){
+ localStorage.setItem(SAVE_KEY,JSON.stringify(save));
+ updateWallet();
+}
+
+function updateWallet(){
+ document.getElementById("coins").textContent=Math.floor(save.coins);
+ document.getElementById("diamonds").textContent=Math.floor(save.diamonds);
+}
+
+
+/* =========================================================
+   WORLDS
+========================================================= */
+
+const worlds=[
+ {
+  name:"ПРОВИНЦИЯ",
+  icon:"🌳",
+  sky:"#67c6f5",
+  ground:"#7ac957",
+  terrain:"hills",
+  unlocked:true
+ },
+ {
+  name:"ПУСТЫНЯ",
+  icon:"🏜️",
+  sky:"#f4b56a",
+  ground:"#d8943d",
+  terrain:"sand",
+  unlocked:true
+ },
+ {
+  name:"АРКТИКА",
+  icon:"❄️",
+  sky:"#a8e7ff",
+  ground:"#d9f7ff",
+  terrain:"ice",
+  unlocked:true
+ },
+ {
+  name:"ЛЕС",
+  icon:"🌲",
+  sky:"#72b9a0",
+  ground:"#487c45",
+  terrain:"forest",
+  unlocked:true
+ },
+ {
+  name:"ГОРЫ",
+  icon:"⛰️",
+  sky:"#83b6d4",
+  ground:"#6b7279",
+  terrain:"mountain",
+  unlocked:true
+ },
+ {
+  name:"ВУЛКАН",
+  icon:"🌋",
+  sky:"#4b2830",
+  ground:"#772b20",
+  terrain:"volcano",
+  unlocked:false
+ },
+ {
+  name:"ЛУНА",
+  icon:"🌕",
+  sky:"#101321",
+  ground:"#777b87",
+  terrain:"moon",
+  unlocked:false
+ },
+ {
+  name:"МАРС",
+  icon:"🔴",
+  sky:"#5c211d",
+  ground:"#a9472f",
+  terrain:"mars",
+  unlocked:false
+ },
+ {
+  name:"ГОРОД",
+  icon:"🏙️",
+  sky:"#6c9cc1",
+  ground:"#4c5359",
+  terrain:"city",
+  unlocked:false
+ },
+ {
+  name:"НОЧНАЯ ТРАССА",
+  icon:"🌃",
+  sky:"#10152c",
+  ground:"#202d35",
+  terrain:"night",
+  unlocked:false
+ }
+];
+
+function openWorlds(){
+
+ showScreen("worlds");
+
+ const grid=document.getElementById("worldGrid");
+ grid.innerHTML="";
+
+ worlds.forEach((world,i)=>{
+
+  const unlocked=
+   world.unlocked ||
+   i===0 ||
+   save.progress[i-1]>=10;
+
+  const div=document.createElement("div");
+
+  div.className="world"+(unlocked?"":" locked");
+
+  div.style.background=
+   `linear-gradient(${world.sky},${world.ground})`;
+
+  div.innerHTML=`
+
+   <span class="lock">
+    ${unlocked?"":"🔒"}
+   </span>
+
+   <b>${i+1}. ${world.icon} ${world.name}</b>
+
+   <small>
+    ${unlocked?
+     `${Math.min(save.progress[i]||1,10)}/10 трасс`:
+     "Пройди предыдущий мир"}
+   </small>
+
+  `;
+
+  if(unlocked){
+
+   div.onclick=()=>{
+    save.selectedWorld=i;
+    openTracks(i);
+   };
+
+  }
+
+  grid.appendChild(div);
+
+ });
+
+}
+
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+let selectedTrack=0;
+
+function openTracks(worldIndex){
+
+ save.selectedWorld=worldIndex;
+
+ showScreen("tracks");
+
+ const world=worlds[worldIndex];
+
+ document.getElementById("trackWorldTitle").textContent=
+  `${world.icon} ${world.name}`;
+
+ document.getElementById("trackProgress").textContent=
+  `${Math.min(save.progress[worldIndex],10)}/10 трасс`;
+
+ const grid=document.getElementById("trackGrid");
+
+ grid.innerHTML="";
+
+ for(let i=0;i<10;i++){
+
+  const unlocked=i<save.progress[worldIndex];
+
+  const track=document.createElement("div");
+
+  track.className="track"+(unlocked?"":" locked");
+
+  let stars=
+   i<save.progress[worldIndex]-1?
+   "★★★":
+   i===save.progress[worldIndex]-1?
+   "★★☆":
+   "☆☆☆";
+
+  track.innerHTML=`
+
+   <div>
+    <div class="trackTitle">
+     ${unlocked?"🏁":"🔒"} Трасса ${i+1}
+    </div>
+
+    <div class="stars">${stars}</div>
+   </div>
+
+   <div class="reward">
+    🪙 ${500+i*100}
+   </div>
+
+  `;
+
+  if(unlocked){
+
+   track.onclick=()=>{
+    selectedTrack=i;
+    startGame(worldIndex,i);
+   };
+
+  }
+
+  grid.appendChild(track);
+
+ }
+
+}
+
+
+/* =========================================================
+   GARAGE
+========================================================= */
+
+function openGarage(){
+ showScreen("garage");
+ updateGarage();
+}
+
+function upgrade(type){
+
+ const level=save.upgrades[type];
+
+ if(level>=10){
+  alert("Максимальный уровень!");
+  return;
+ }
+
+ const price=
+  700+
+  level*650;
+
+ if(save.coins<price){
+  alert("Недостаточно монет!");
+  return;
+ }
+
+ save.coins-=price;
+ save.upgrades[type]++;
+ saveGame();
+ updateGarage();
+}
+
+function updateGarage(){
+
+ const names=[
+  "engine",
+  "suspension",
+  "tires",
+  "awd",
+  "fuel"
+ ];
+
+ names.forEach(type=>{
+
+  const level=save.upgrades[type];
+
+  const lvl=document.getElementById(type+"Lvl");
+  const bar=document.getElementById(type+"Bar");
+  const price=document.getElementById(type+"Price");
+
+  if(lvl) lvl.textContent=level;
+
+  if(bar) bar.style.width=(level*10)+"%";
+
+  if(price){
+
+   if(level>=10)
+    price.textContent="MAX";
+   else
+    price.textContent="🪙 "+(700+level*650);
+
+  }
+
+ });
+
+}
+
+
+/* =========================================================
+   SCREEN
+========================================================= */
+
+function showScreen(id){
+
+ document.querySelectorAll(".screen")
+ .forEach(x=>x.classList.remove("active"));
+
+ document.getElementById(id)
+ .classList.add("active");
+
+ updateWallet();
+}
+
+
+/* =========================================================
+   GAME ENGINE
+========================================================= */
+
+const canvas=document.getElementById("gameCanvas");
+const ctx=canvas.getContext("2d");
+
+let W=innerWidth;
+let H=innerHeight;
+
+function resize(){
+
+ W=innerWidth;
+ H=innerHeight;
+
+ canvas.width=W*devicePixelRatio;
+ canvas.height=H*devicePixelRatio;
+
+ canvas.style.width=W+"px";
+ canvas.style.height=H+"px";
+
+ ctx.setTransform(
+  devicePixelRatio,0,0,
+  devicePixelRatio,0,0
+ );
+
+}
+
+addEventListener("resize",resize);
+resize();
+
+
+let gameRunning=false;
+let gamePaused=false;
+let animation=0;
+
+let worldIndex=0;
+let trackIndex=0;
+
+let terrain=[];
+let coinsOnTrack=[];
+
+let car={
+ x:180,
+ y:300,
+ vx:0,
+ vy:0,
+ angle:0,
+ angularVelocity:0,
+ wheelBase:78,
+ wheelRadius:22,
+ fuel:100,
+ distance:0,
+ collected:0,
+ grounded:false
+};
+
+let cameraX=0;
+
+let keys={
+ gas:false,
+ brake:false,
+ left:false,
+ right:false
+};
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+addEventListener("keydown",e=>{
+
+ if(e.code==="ArrowRight"||e.code==="KeyD")
+  keys.gas=true;
+
+ if(e.code==="ArrowLeft"||e.code==="KeyA")
+  keys.brake=true;
+
+ if(e.code==="KeyW")
+  keys.right=true;
+
+ if(e.code==="KeyS")
+  keys.left=true;
+
+});
+
+addEventListener("keyup",e=>{
+
+ if(e.code==="ArrowRight"||e.code==="KeyD")
+  keys.gas=false;
+
+ if(e.code==="ArrowLeft"||e.code==="KeyA")
+  keys.brake=false;
+
+ if(e.code==="KeyW")
+  keys.right=false;
+
+ if(e.code==="KeyS")
+  keys.left=false;
+
+});
+
+
+function hold(id,key){
+
+ const el=document.getElementById(id);
+
+ const down=e=>{
+  e.preventDefault();
+  keys[key]=true;
+ };
+
+ const up=e=>{
+  e.preventDefault();
+  keys[key]=false;
+ };
+
+ el.addEventListener("pointerdown",down);
+ el.addEventListener("pointerup",up);
+ el.addEventListener("pointercancel",up);
+ el.addEventListener("pointerleave",up);
+
+}
+
+hold("gasBtn","gas");
+hold("brakeBtn","brake");
+hold("leftBtn","left");
+hold("rightBtn","right");
+
+
+/* =========================================================
+   TERRAIN GENERATOR
+========================================================= */
+
+function noise(x,seed){
+
+ return Math.sin(
+   x*.013+seed
+ )*.55+
+ Math.sin(
+   x*.031+seed*2
+ )*.28+
+ Math.sin(
+   x*.071+seed*4
+ )*.12;
+}
+
+function generateTerrain(type,track){
+
+ terrain=[];
+ coinsOnTrack=[];
+
+ const seed=
+  worldIndex*100+
+  track*19+
+  7;
+
+ const length=
+  10000+
+  track*900;
+
+ let y=H*.67;
+
+ for(let x=0;x<length;x+=22){
+
+  let n=0;
+
+  switch(type){
+
+   case"hills":
+    n=noise(x,seed)*80;
+    break;
+
+   case"sand":
+    n=noise(x,seed)*105+
+      Math.sin(x*.006)*45;
+    break;
+
+   case"ice":
+    n=noise(x,seed)*65+
+      Math.sin(x*.003)*25;
+    break;
+
+   case"forest":
+    n=noise(x,seed)*100+
+      Math.sin(x*.018)*30;
+    break;
+
+   case"mountain":
+    n=noise(x,seed)*150+
+      Math.sin(x*.004)*90;
+    break;
+
+   case"volcano":
+    n=noise(x,seed)*135+
+      Math.sin(x*.009)*100;
+    break;
+
+   case"moon":
+    n=noise(x,seed)*120+
+      Math.sin(x*.005)*55;
+    break;
+
+   case"mars":
+    n=noise(x,seed)*130+
+      Math.sin(x*.008)*70;
+    break;
+
+   case"city":
+    n=noise(x,seed)*75+
+      Math.sin(x*.02)*25;
+    break;
+
+   case"night":
+    n=noise(x,seed)*100+
+      Math.sin(x*.006)*60;
+    break;
+
+  }
+
+  y=H*.66+n;
+
+  terrain.push({
+   x:x,
+   y:y
+  });
+
+  if(x>250 && x%330<22){
+
+   coinsOnTrack.push({
+    x:x,
+    y:y-75-Math.abs(n*.1),
+    taken:false
+   });
+
+  }
+
+ }
+
+}
+
+
+function terrainY(x){
+
+ if(!terrain.length)
+  return H*.65;
+
+ let i=Math.floor(x/22);
+
+ if(i<0)i=0;
+
+ if(i>=terrain.length-1)
+  i=terrain.length-2;
+
+ const a=terrain[i];
+ const b=terrain[i+1];
+
+ const t=(x-a.x)/(b.x-a.x);
+
+ return a.y+(b.y-a.y)*t;
+
+}
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+function startGame(w,t){
+
+ worldIndex=w;
+ trackIndex=t;
+
+ generateTerrain(
+  worlds[worldIndex].terrain,
+  trackIndex
+ );
+
+ car={
+  x:180,
+  y:terrainY(180)-60,
+  vx:0,
+  vy:0,
+  angle:0,
+  angularVelocity:0,
+  wheelBase:78,
+  wheelRadius:22,
+  fuel:100+
+   save.upgrades.fuel*5,
+  distance:0,
+  collected:0,
+  grounded:false
+ };
+
+ cameraX=0;
+
+ document.getElementById("trackNumber")
+  .textContent=(trackIndex+1);
+
+ document.getElementById("gameCoins")
+  .textContent="0";
+
+ gameRunning=true;
+ gamePaused=false;
+
+ document.getElementById("pausePanel")
+  .style.display="none";
+
+ showScreen("game");
+
+ cancelAnimationFrame(animation);
+
+ gameLoop();
+
+}
+
+
+/* =========================================================
+   PHYSICS
+========================================================= */
+
+function physics(){
+
+ if(!gameRunning||gamePaused)
+  return;
+
+ const u=save.upgrades;
+
+ const gravity=
+  worlds[worldIndex].terrain==="moon"?
+  0.32:
+  0.85;
+
+ let enginePower=
+  0.17+
+  u.engine*.035;
+
+ let maxSpeed=
+  8+
+  u.engine*.45;
+
+ if(keys.gas && car.fuel>0){
+
+  car.vx+=enginePower;
+
+  car.fuel-=
+   .035/(1+u.fuel*.12);
+
+ }
+
+ if(keys.brake)
+  car.vx-=.12;
+
+ car.vx*=.992;
+
+ car.vx=Math.max(
+  -4,
+  Math.min(maxSpeed,car.vx)
+ );
+
+ car.vy+=gravity;
+
+ car.x+=car.vx;
+ car.y+=car.vy;
+
+
+ /* WHEELS */
+
+ const wheel1={
+  x:car.x-Math.cos(car.angle)*car.wheelBase/2,
+  y:car.y-Math.sin(car.angle)*car.wheelBase/2
+ };
+
+ const wheel2={
+  x:car.x+Math.cos(car.angle)*car.wheelBase/2,
+  y:car.y+Math.sin(car.angle)*car.wheelBase/2
+ };
+
+ const ground1=
+  terrainY(wheel1.x)-car.wheelRadius;
+
+ const ground2=
+  terrainY(wheel2.x)-car.wheelRadius;
+
+ const penetration1=
+  wheel1.y-ground1;
+
+ const penetration2=
+  wheel2.y-ground2;
+
+ car.grounded=
+  penetration1>0 ||
+  penetration2>0;
+
+ if(car.grounded){
+
+  const groundSlope=
+   Math.atan2(
+    terrainY(car.x+40)-
+    terrainY(car.x-40),
+    80
+   );
+
+  const targetAngle=
+   groundSlope;
+
+  car.angle+=
+   (targetAngle-car.angle)*
+   (.025+
+    u.suspension*.006);
+
+  if(penetration1>0)
+   car.y-=penetration1*.65;
+
+  if(penetration2>0)
+   car.y-=penetration2*.65;
+
+  car.vy*=.35;
+
+  if(Math.abs(car.angle)>Math.PI*.52){
+
+   car.angularVelocity+=
+    (keys.left?-.004:
+     keys.right?.004:0);
+
+  }
+
+ }else{
+
+  if(keys.left)
+   car.angle-=.045;
+
+  if(keys.right)
+   car.angle+=.045;
+
+ }
+
+ car.angularVelocity*=.96;
+
+ car.angle+=car.angularVelocity;
+
+ car.distance=
+  Math.max(
+   0,
+   Math.floor((car.x-180)/10)
+  );
+
+ /* coins */
+
+ coinsOnTrack.forEach(c=>{
+
+  if(c.taken)return;
+
+  const dx=c.x-car.x;
+  const dy=c.y-car.y;
+
+  if(Math.sqrt(dx*dx+dy*dy)<55){
+
+   c.taken=true;
+   car.collected++;
+
+  }
+
+ });
+
+ /* fuel end */
+
+ if(car.fuel<=0){
+
+  car.fuel=0;
+
+  if(Math.abs(car.vx)<.15)
+   finish(false);
+
+ }
+
+ /* fall */
+
+ if(car.y>H+500)
+  finish(false);
+
+ /* finish distance */
+
+ const finishX=
+  terrain[terrain.length-1].x-400;
+
+ if(car.x>=finishX)
+  finish(true);
+
+}
+
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function draw(){
+
+ const world=worlds[worldIndex];
+
+ /* SKY */
+
+ ctx.fillStyle=world.sky;
+ ctx.fillRect(0,0,W,H);
+
+ drawBackground(world);
+
+ cameraX=
+  car.x-W*.35;
+
+ cameraX=Math.max(0,cameraX);
+
+ /* terrain */
+
+ ctx.beginPath();
+
+ ctx.moveTo(
+  terrain[0].x-cameraX,
+  H
+ );
+
+ terrain.forEach(p=>{
+
+  ctx.lineTo(
+   p.x-cameraX,
+   p.y
+  );
+
+ });
+
+ ctx.lineTo(
+  terrain[terrain.length-1].x-cameraX,
+  H
+ );
+
+ ctx.closePath();
+
+ ctx.fillStyle=world.ground;
+ ctx.fill();
+
+ /* grass / surface */
+
+ ctx.beginPath();
+
+ terrain.forEach((p,i)=>{
+
+  if(i===0)
+   ctx.moveTo(
+    p.x-cameraX,
+    p.y
+   );
+  else
+   ctx.lineTo(
+    p.x-cameraX,
+    p.y
+   );
+
+ });
+
+ ctx.strokeStyle="#b5ed63";
+ ctx.lineWidth=7;
+ ctx.stroke();
+
+ /* coins */
+
+ coinsOnTrack.forEach(c=>{
+
+  if(c.taken)return;
+
+  const x=c.x-cameraX;
+
+  if(x<-50||x>W+50)return;
+
+  ctx.beginPath();
+  ctx.arc(x,c.y,16,0,Math.PI*2);
+
+  ctx.fillStyle="#ffd12b";
+  ctx.fill();
+
+  ctx.strokeStyle="#9a6900";
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.fillStyle="#9a6900";
+  ctx.font="bold 15px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("C",x,c.y+5);
+
+ });
+
+ /* CAR */
+
+ drawCar();
+
+ /* HUD */
+
+ document.getElementById("distance")
+  .textContent=car.distance;
+
+ document.getElementById("gameCoins")
+  .textContent=car.collected*25;
+
+ document.getElementById("fuelBarGame")
+  .style.width=
+   Math.max(0,car.fuel/
+    (100+save.upgrades.fuel*5)*100)+"%";
+
+}
+
+
+function drawCar(){
+
+ const x=car.x-cameraX;
+ const y=car.y;
+
+ ctx.save();
+
+ ctx.translate(x,y);
+ ctx.rotate(car.angle);
+
+ /* shadow */
+
+ ctx.globalAlpha=.25;
+ ctx.fillStyle="#000";
+
+ ctx.beginPath();
+ ctx.ellipse(
+  0,
+  48,
+  75,
+  12,
+  0,0,Math.PI*2
+ );
+
+ ctx.fill();
+
+ ctx.globalAlpha=1;
+
+ /* PNG */
+
+ const img=document.getElementById("g63Image");
+
+ if(img){
+
+  ctx.drawImage(
+   img,
+   -75,
+   -55,
+   150,
+   85
+  );
+
+ }else{
+
+  /* fallback */
+
+  ctx.fillStyle="#151515";
+
+  ctx.fillRect(
+   -65,
+   -40,
+   130,
+   60
+  );
+
+ }
+
+ /* wheels */
+
+ drawWheel(-42,30);
+ drawWheel(42,30);
+
+ ctx.restore();
+
+}
+
+
+function drawWheel(x,y){
+
+ ctx.beginPath();
+
+ ctx.arc(
+  x,
+  y,
+  car.wheelRadius,
+  0,
+  Math.PI*2
+ );
+
+ ctx.fillStyle="#111";
+ ctx.fill();
+
+ ctx.beginPath();
+
+ ctx.arc(
+  x,
+  y,
+  9,
+  0,
+  Math.PI*2
+ );
+
+ ctx.fillStyle="#777";
+ ctx.fill();
+
+}
+
+
+/* hidden image loader */
+
+const g63Image=new Image();
+g63Image.id="g63Image";
+g63Image.src="G63Kart.PNG";
+document.body.appendChild(g63Image);
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+function drawBackground(world){
+
+ ctx.save();
+
+ const parallax=cameraX*.18;
+
+ if(world.terrain==="forest"){
+
+  for(let x=-100;x<W+300;x+=110){
+
+   const xx=x-(parallax%110);
+
+   ctx.fillStyle="#245936";
+
+   ctx.beginPath();
+   ctx.moveTo(xx,H*.55);
+   ctx.lineTo(xx+40,H*.30);
+   ctx.lineTo(xx+80,H*.55);
+   ctx.fill();
+
+  }
+
+ }
+
+ if(world.terrain==="mountain"){
+
+  ctx.fillStyle="#607e92";
+
+  for(let x=-100;x<W+400;x+=280){
+
+   const xx=x-(parallax%280);
+
+   ctx.beginPath();
+   ctx.moveTo(xx,H*.58);
+   ctx.lineTo(xx+140,H*.20);
+   ctx.lineTo(xx+280,H*.58);
+   ctx.fill();
+
+  }
+
+ }
+
+ if(world.terrain==="city"){
+
+  for(let x=-50;x<W+400;x+=90){
+
+   const h=
+    100+
+    Math.abs(Math.sin(x))*150;
+
+   ctx.fillStyle="#3a4851";
+
+   ctx.fillRect(
+    x-(cameraX*.25%90),
+    H*.6-h,
+    65,
+    h
+   );
+
+   ctx.fillStyle="#f4d66d";
+
+   for(let yy=H*.6-h+20;yy<H*.6-10;yy+=28){
+
+    ctx.fillRect(
+     x+12-(cameraX*.25%90),
+     yy,
+     8,
+     10
+    );
+
+    ctx.fillRect(
+     x+40-(cameraX*.25%90),
+     yy,
+     8,
+     10
+    );
+
+   }
+
+  }
+
+ }
+
+ if(world.terrain==="moon"){
+
+  ctx.fillStyle="#fff";
+
+  ctx.beginPath();
+  ctx.arc(
+   W*.8,
+   H*.18,
+   55,
+   0,
+   Math.PI*2
+  );
+
+  ctx.fill();
+
+ }
+
+ if(world.terrain==="night"){
+
+  ctx.fillStyle="#fff";
+
+  for(let i=0;i<80;i++){
+
+   const x=
+    (i*137-cameraX*.08)%W;
+
+   const y=
+    (i*67)%Math.max(100,H*.5);
+
+   ctx.fillRect(x,y,2,2);
+
+  }
+
+ }
+
+ ctx.restore();
+
+}
+
+
+/* =========================================================
+   LOOP
+========================================================= */
+
+function gameLoop(){
+
+ physics();
+ draw();
+
+ if(gameRunning)
+  animation=requestAnimationFrame(gameLoop);
+
+}
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function pauseGame(){
+
+ if(!gameRunning)return;
+
+ gamePaused=true;
+
+ document.getElementById("pausePanel")
+  .style.display="flex";
+
+}
+
+function resumeGame(){
+
+ gamePaused=false;
+
+ document.getElementById("pausePanel")
+  .style.display="none";
+
+}
+
+function quitGame(){
+
+ gameRunning=false;
+ gamePaused=false;
+
+ document.getElementById("pausePanel")
+  .style.display="none";
+
+ openTracks(worldIndex);
+
+}
+
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finish(win){
+
+ if(!gameRunning)return;
+
+ gameRunning=false;
+
+ const reward=
+  win?
+  500+
+  trackIndex*100+
+  car.collected*25:
+  Math.floor(car.collected*10);
+
+ if(win){
+
+  save.coins+=reward;
+
+  if(trackIndex+1>=save.progress[worldIndex] &&
+     save.progress[worldIndex]<10){
+
+   save.progress[worldIndex]++;
+
+  }
+
+  /* unlock next world */
+
+  if(
+   save.progress[worldIndex]>=10 &&
+   worldIndex<9
+  ){
+   if(save.progress[worldIndex+1]<1)
+    save.progress[worldIndex+1]=1;
+  }
+
+ }
+
+ saveGame();
+
+ document.getElementById("resultTitle")
+  .textContent=
+   win?
+   "🏆 ТРАССА ПРОЙДЕНА!":
+   "💥 АВАРИЯ";
+
+ document.getElementById("resultCoins")
+  .textContent=reward;
+
+ document.getElementById("resultDistance")
+  .textContent=car.distance;
+
+ let stars=1;
+
+ if(win && car.distance>700)stars=2;
+ if(win && car.distance>1300)stars=3;
+
+ document.getElementById("resultStars")
+  .textContent=
+   win?"★".repeat(stars)+"☆".repeat(3-stars):"★☆☆";
+
+ showScreen("result");
+
+}
+
+
+/* =========================================================
+   NEXT TRACK
+========================================================= */
+
+function nextTrack(){
+
+ if(trackIndex<9){
+
+  startGame(
+   worldIndex,
+   trackIndex+1
+  );
+
+ }else{
+
+  openTracks(worldIndex);
+
+ }
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+updateWallet();
+updateGarage();
+
+</script>
+
+</body>
+</html>
